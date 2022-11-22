@@ -21,6 +21,30 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
+
+    <form action="meals?action=filter" method="post">
+        <dl>
+            <dt>От даты (включая):</dt>
+            <dd><input type="date" id="startDate" name="startDate" value="${param.startDate}"></dd>
+        </dl>
+        <dl>
+            <dt>До даты (включая):</dt>
+            <dd><input type="date" id="endDate" name="endDate" value="${param.endDate}"></dd>
+        </dl>
+        <dl>
+            <dt>От времени (включая):</dt>
+            <dd><input type="time" id="startTime" name="startTime" value="${param.startTime}"></dd>
+        </dl>
+        <dl>
+            <dt>До времени (исключая):</dt>
+            <dd><input type="time" id="endTime" name="endTime" value="${param.endTime}"></dd>
+        </dl>
+
+        <button type="submit">Фильтровать</button>
+        <button type="submit" name="cancel" value="cancel">Отменить</button>
+    </form>
+
+    <br><br>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
@@ -34,7 +58,7 @@
         </tr>
         </thead>
         <c:forEach items="${requestScope.meals}" var="meal">
-            <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
             <tr class="${meal.excess ? 'excess' : 'normal'}">
                 <td>
                         <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
