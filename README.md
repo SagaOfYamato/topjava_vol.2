@@ -1,5 +1,9 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/bee16f3145654047a0505c62aeefd8a2)](https://www.codacy.com/gh/JavaWebinar/topjava/dashboard)
+
 Java Enterprise Online Project
 ===============================
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/de2d01845bc44836863101864bfd77c5)](https://www.codacy.com/gh/SagaOfYamato/topjava_vol.2/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SagaOfYamato/topjava_vol.2&amp;utm_campaign=Badge_Grade)
 
 Наиболее востребованные технологии /инструменты / фреймворки Java Enterprise:
 Maven/ Spring/ Security/ JPA(Hibernate)/ REST(Jackson)/ Bootstrap(CSS)/ jQuery + plugins.
