@@ -1,7 +1,14 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,6 +20,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -29,6 +37,12 @@ public class MealServiceTest {
 
     @Autowired
     private MealService service;
+
+    @ClassRule
+    public static ExternalResource summary = TimingRules.SUMMARY;
+
+    @Rule
+    public Stopwatch stopwatch = TimingRules.STOPWATCH;
 
     @Test
     public void delete() {
@@ -85,7 +99,7 @@ public class MealServiceTest {
         MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), getUpdated());
     }
 
-    @Test
+    @Test(expected = AssertionError.class)
     public void updateNotOwn() {
         assertThrows(NotFoundException.class, () -> service.update(meal1, ADMIN_ID));
         MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), meal1);
@@ -107,5 +121,43 @@ public class MealServiceTest {
     @Test
     public void getBetweenWithNullDates() {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), meals);
+    }
+
+    public static class TimingRules {
+
+        private static final Logger log = LoggerFactory.getLogger("result");
+
+        private static final StringBuilder results = new StringBuilder();
+
+        public static final Stopwatch STOPWATCH = new Stopwatch() {
+            @Override
+            protected void finished(long nanos, Description description) {
+                String result = String.format("%-95s %7d", description.getDisplayName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+                results.append(result).append('\n');
+                log.info(result + " ms\n");
+            }
+        };
+
+        // элемент разметки
+        //    https://dzone.com/articles/applying-new-jdk-11-string-methods
+        private static final String DELIM = "-".repeat(103);
+
+        //форматируем красивый вывод в консоль
+        public static final ExternalResource SUMMARY = new ExternalResource() {
+
+            //обнуляем перед запуском тестов класса
+            @Override
+            protected void before() throws Throwable {
+                results.setLength(0);
+            }
+
+            //выводим отформатированный результат
+            @Override
+            protected void after() {
+                log.info("\n" + DELIM +
+                        "\nTest                                                                                       Duration, ms" +
+                        "\n" + DELIM + "\n" + results + DELIM + "\n");
+            }
+        };
     }
 }
