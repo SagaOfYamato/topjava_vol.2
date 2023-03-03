@@ -1,10 +1,12 @@
 package ru.javawebinar.topjava.web.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.web.json.JacksonObjectMapperWithMeals;
 
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
@@ -13,6 +15,9 @@ import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 @RequestMapping(value = ProfileRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfileRestController extends AbstractUserController {
     static final String REST_URL = "/rest/profile";
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public User get() {
@@ -38,7 +43,7 @@ public class ProfileRestController extends AbstractUserController {
 
     @GetMapping("/with-meals")
     public User getWithMeals() {
-        User user = super.get(authUserId());
+        User user = userService.getWithMeals(authUserId());
         ObjectMapper mapper = JacksonObjectMapperWithMeals.getMapper();
         return mapper.convertValue(user, User.class);
     }
