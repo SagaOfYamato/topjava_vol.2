@@ -23,6 +23,49 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
+    <!--  Date/Time Formatter -->
+    <!--<bean id="customDateFormatter" class="ru.javawebinar.topjava.util.formatter.CustomDateFormatter"/>
+    <bean id="customTimeFormatter" class="ru.javawebinar.topjava.util.formatter.CustomTimeFormatter"/>
+
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="formatters">
+            <set>
+                <ref bean="customDateFormatter"/>
+                <ref bean="customTimeFormatter"/>
+            </set>
+        </property>
+    </bean>
+
+    <mvc:annotation-driven conversion-service="conversionService"/>
+-->
+
+    <bean id="customDateTimeFormatAnnotationFormatterFactory"
+          class="ru.javawebinar.topjava.util.formatter.CustomDateTimeFormatAnnotationFormatterFactory"/>
+
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="formatters">
+            <set>
+                <ref bean="customDateTimeFormatAnnotationFormatterFactory"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="webBindingInitializer">
+            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+                <property name="conversionService">
+                    <bean class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+                        <property name="formatters">
+                            <set>
+                                <ref bean="customDateTimeFormatAnnotationFormatterFactory"/>
+                            </set>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
     <context:component-scan base-package="ru.javawebinar.**.web"/>
 
     <!--  all resources inside folder src/main/webapp/resources are mapped so they can be referred to inside JSP files -->
