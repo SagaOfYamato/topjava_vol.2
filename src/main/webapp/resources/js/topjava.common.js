@@ -1,4 +1,5 @@
 let form;
+let filterData = {};
 
 function makeEditable(datatableApi) {
     ctx.datatableApi = datatableApi;
@@ -27,7 +28,11 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        if (filterData == null) {
+            updateTable();
+        } else {
+            updateTableWithFilter(filterData);
+        }
         successNoty("Deleted");
     });
 }
@@ -38,6 +43,50 @@ function updateTable() {
     });
 }
 
+function updateTableWithFilter() {
+    let filters = getFilters();
+
+    $.ajax({
+        url: ctx.ajaxUrl + 'get-between',
+        type: 'GET',
+        data: filters,
+        success: function (data) {
+            ctx.datatableApi.clear().rows.add(data).draw();
+            filterData = filters;
+        }
+    });
+}
+
+function getFilters() {
+    let startDate = $('#inputStartDate').val();
+    let endDate = $('#inputEndDate').val();
+    let startTime = $('#inputStartTime').val();
+    let endTime = $('#inputEndTime').val();
+
+    return {
+        startDate: startDate,
+        endDate: endDate,
+        startTime: startTime,
+        endTime: endTime
+    };
+}
+
+function filterMeal(event) {
+    event.preventDefault();
+    updateTableWithFilter()
+}
+
+function cancelFilter() {
+    ctx.datatableApi.search('').columns().search('').draw();
+
+    $('#inputStartDate').val('');
+    $('#inputEndDate').val('');
+    $('#inputStartTime').val('');
+    $('#inputEndTime').val('');
+
+    updateTable();
+}
+
 function save() {
     $.ajax({
         type: "POST",
@@ -45,44 +94,21 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
-        successNoty("Saved");
-    });
-}
-
-function filterMeal(event) {
-    event.preventDefault();
-    let startDate = $('#inputStartDate').val();
-    let endDate = $('#inputEndDate').val();
-    let startTime = $('#inputStartTime').val();
-    let endTime = $('#inputEndTime').val();
-
-    let data = {
-        startDate: startDate,
-        endDate: endDate,
-        startTime: startTime,
-        endTime: endTime
-    };
-
-    $.ajax({
-        url: 'profile/meals/get-between',
-        type: 'GET',
-        data: data,
-        success: function (data) {
-            ctx.datatableApi.clear().rows.add(data).draw();
+        if (filterData == null) {
+            updateTable();
+        } else {
+            updateTableWithFilter(filterData);
         }
+        successNoty("Saved");
+        filterData = getFilters();
     });
-}
-
-function cancelFilter() {
-    updateTable();
 }
 
 function updateUserEnabled(enabled, id) {
     $.ajax({
         type: 'POST',
         url: ctx.ajaxUrl + id,
-        data: { enabled: enabled },
+        data: {enabled: enabled},
     }).done(function () {
         updateTable();
         successNoty("Update enabled");
