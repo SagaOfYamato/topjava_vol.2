@@ -50,6 +50,45 @@ function save() {
     });
 }
 
+function filterMeal(event) {
+    event.preventDefault();
+    let startDate = $('#inputStartDate').val();
+    let endDate = $('#inputEndDate').val();
+    let startTime = $('#inputStartTime').val();
+    let endTime = $('#inputEndTime').val();
+
+    let data = {
+        startDate: startDate,
+        endDate: endDate,
+        startTime: startTime,
+        endTime: endTime
+    };
+
+    $.ajax({
+        url: 'profile/meals/get-between',
+        type: 'GET',
+        data: data,
+        success: function (data) {
+            ctx.datatableApi.clear().rows.add(data).draw();
+        }
+    });
+}
+
+function cancelFilter() {
+    updateTable();
+}
+
+function updateUserEnabled(enabled, id) {
+    $.ajax({
+        type: 'POST',
+        url: ctx.ajaxUrl + id,
+        data: { enabled: enabled },
+    }).done(function () {
+        updateTable();
+        successNoty("Update enabled");
+    });
+}
+
 let failedNote;
 
 function closeNoty() {
