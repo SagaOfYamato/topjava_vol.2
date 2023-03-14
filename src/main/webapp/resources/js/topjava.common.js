@@ -1,4 +1,5 @@
 let form;
+let filterData = {};
 
 function makeEditable(datatableApi) {
     ctx.datatableApi = datatableApi;
@@ -27,7 +28,11 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        if (filterData == null) {
+            updateTable();
+        } else {
+            updateTableWithFilter(filterData);
+        }
         successNoty("Deleted");
     });
 }
@@ -38,6 +43,20 @@ function updateTable() {
     });
 }
 
+function updateTableWithFilter() {
+        let filters = getFilters();
+
+        $.ajax({
+            url: ctx.ajaxUrl + 'get-between',
+            type: 'GET',
+            data: filters,
+            success: function (data) {
+                ctx.datatableApi.clear().rows.add(data).draw();
+                filterData = filters;
+            }
+        });
+}
+
 function save() {
     $.ajax({
         type: "POST",
@@ -45,33 +64,33 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        if (filterData == null) {
+            updateTable();
+        } else {
+            updateTableWithFilter(filterData);
+        }
         successNoty("Saved");
+        filterData = getFilters();
     });
 }
 
-function filterMeal(event) {
-    event.preventDefault();
+function getFilters() {
     let startDate = $('#inputStartDate').val();
     let endDate = $('#inputEndDate').val();
     let startTime = $('#inputStartTime').val();
     let endTime = $('#inputEndTime').val();
 
-    let data = {
+    return {
         startDate: startDate,
         endDate: endDate,
         startTime: startTime,
         endTime: endTime
     };
+}
 
-    $.ajax({
-        url: 'profile/meals/get-between',
-        type: 'GET',
-        data: data,
-        success: function (data) {
-            ctx.datatableApi.clear().rows.add(data).draw();
-        }
-    });
+function filterMeal(event) {
+    event.preventDefault();
+    updateTableWithFilter()
 }
 
 function cancelFilter() {
