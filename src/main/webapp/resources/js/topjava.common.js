@@ -44,33 +44,16 @@ function updateTable() {
 }
 
 function updateTableWithFilter() {
-        let filters = getFilters();
+    let filters = getFilters();
 
-        $.ajax({
-            url: ctx.ajaxUrl + 'get-between',
-            type: 'GET',
-            data: filters,
-            success: function (data) {
-                ctx.datatableApi.clear().rows.add(data).draw();
-                filterData = filters;
-            }
-        });
-}
-
-function save() {
     $.ajax({
-        type: "POST",
-        url: ctx.ajaxUrl,
-        data: form.serialize()
-    }).done(function () {
-        $("#editRow").modal("hide");
-        if (filterData == null) {
-            updateTable();
-        } else {
-            updateTableWithFilter(filterData);
+        url: ctx.ajaxUrl + 'get-between',
+        type: 'GET',
+        data: filters,
+        success: function (data) {
+            ctx.datatableApi.clear().rows.add(data).draw();
+            filterData = filters;
         }
-        successNoty("Saved");
-        filterData = getFilters();
     });
 }
 
@@ -94,14 +77,38 @@ function filterMeal(event) {
 }
 
 function cancelFilter() {
+    ctx.datatableApi.search('').columns().search('').draw();
+
+    $('#inputStartDate').val('');
+    $('#inputEndDate').val('');
+    $('#inputStartTime').val('');
+    $('#inputEndTime').val('');
+
     updateTable();
+}
+
+function save() {
+    $.ajax({
+        type: "POST",
+        url: ctx.ajaxUrl,
+        data: form.serialize()
+    }).done(function () {
+        $("#editRow").modal("hide");
+        if (filterData == null) {
+            updateTable();
+        } else {
+            updateTableWithFilter(filterData);
+        }
+        successNoty("Saved");
+        filterData = getFilters();
+    });
 }
 
 function updateUserEnabled(enabled, id) {
     $.ajax({
         type: 'POST',
         url: ctx.ajaxUrl + id,
-        data: { enabled: enabled },
+        data: {enabled: enabled},
     }).done(function () {
         updateTable();
         successNoty("Update enabled");
