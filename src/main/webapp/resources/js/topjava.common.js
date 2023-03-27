@@ -22,6 +22,14 @@ function updateRow(id) {
     form.find(":input").val("");
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(ctx.ajaxUrl + id, function (data) {
+
+        if (data.hasOwnProperty("dateTime")) {
+            var dateTime = data.dateTime;
+            dateTime = dateTime.replace("T", " ");
+            dateTime = dateTime.substring(0, 16);
+            data.dateTime = dateTime;
+        }
+
         $.each(data, function (key, value) {
             form.find("input[name='" + key + "']").val(value);
         });
