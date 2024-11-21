@@ -17,8 +17,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <spring.version>5.3.24</spring.version>
-        <spring.security.version>5.8.0</spring.security.version>
-        <spring-data-jpa.version>2.7.6</spring-data-jpa.version>
+        <spring.security.version>6.2.7</spring.security.version>
+        <spring-data-jpa.version>3.2.11</spring-data-jpa.version>
         <jackson.version>2.14.1</jackson.version>
         <tomcat.version>9.0.68</tomcat.version>
 
